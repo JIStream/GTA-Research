@@ -404,7 +404,7 @@ int func_148()//Position - 0x98F3
 }
 ```
 
-What happens here is pretty obvious, ``Global_89962`` should be familiar to us from [mission fail & retry research](https://github.com/drunderscore/GTA-Research/blob/master/Mission-Fail-Retry-Research.md). 
+What happens here is pretty obvious, ``Global_89962`` should be familiar to us from [mission fail & retry research](https://github.com/drunderscore/GTA-Research/blob/master/Mission-Fail-Retry-Research.md) (actually globals are different since different game versions were used, I'll probably update old research to use 1.27 sometime in the future). 
 ``Global_89962`` is ``MISSION_FAILED_STATE`` and we check if we are not in 'after retry' state. Coincidentally, that's exactly the state we have after OM0-ing first S&F mission since we fail the mission to get OM0.
 
 That's all there is to it, setting ``MISSION_TYPE`` is completely skipped, leaving us in ``MISSION_TYPE_OFF_MISSION`` state in the second S&F mission.
