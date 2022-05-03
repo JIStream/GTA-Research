@@ -128,16 +128,17 @@ With that knowledge all that's left is to delay the cutscene from playing by int
 
 ### Why Director Mode
 
-Drowning strat is rather slow because of the slow walk forced by ``hunting1`` and the fact that drowning itself is not a fast process. What can we do to make the process faster? Well, we still have proofs to deal with. 
+Drowning strat is rather slow because of the slow walk forced by ``hunting1`` and the fact that drowning itself is not fast. What can we do to make the process faster? Well, we still have proofs to deal with. 
 If we were to somehow disable both the proofs and the invincibility, we'll be able to blow ourselves up and significantly speed up the process of getting OM0. That's where Director Mode comes in.
 
-``director_mode`` script removes both invincibility and proofs after you close "Director Mode is not available whilst playing a mission." warning. This message occurs when you try to launch DM with ``MISSION_TYPE`` != ``MISSION_TYPE_OFF_MISSION`` (+ few other special cases we don't care about here). 
+``director_mode`` script removes both invincibility and proofs after you close "Director Mode is not available whilst playing a mission." warning. This message occurs when you try to launch DM with ``MISSION_TYPE != MISSION_TYPE_OFF_MISSION`` (+ few other special cases we don't care about here). 
+
 The plan here is simple: start DM just before you trigger S&F mission. Sounds easy but there are 2 problems: 
 
 First problem here is that the game checks ``MISSION_TYPE`` 3 times if you start DM from interactions menu. First, it is checked right after you click the option in the interactions menu (``pi_menu``), second time in ``main`` before launching ``director_mode`` script
 and finally during the initialization of ``director_mode`` itself. Only ``director_mode`` script removes the proofs, meaning that you have to pass 2 checks before it starts and fail the last one to trigger removal of proofs. This alone requires close to frame perfect inputs from the player.
 
-The second problem is that ``launcher_hunting`` doesn't set proofs on the same frame as it changes ``MISSION_TYPE``. It first sets ``MISSION_TYPE`` and then it waits for ``hunting1`` script to load first before setting the proofs. What that means is that we can end up in the situations where we successfully
+The second problem is that ``launcher_hunting`` doesn't set proofs on the same frame as it changes ``MISSION_TYPE``. It first sets ``MISSION_TYPE`` and then it waits for ``hunting1`` script to load before setting the proofs. What that means is that we can end up in the situations where we successfully
 got the warning screen from ``director_mode`` but still have no proofs set. In this case, ``director_mode`` will remove the proofs only for the ``launcher_hunting`` to set them back in few frames.
 
 These two problems combined make this trick close to frame perfect but with clever setups and references it is still possible to execute it with some consistency.
