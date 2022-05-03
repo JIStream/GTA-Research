@@ -106,7 +106,7 @@ And that's it, that's how OM0 is achieved.
 
 ### Why drowning
 
-As we know, we have to die while starting S&F mission. But you can't just pull out a c4 and blow yourself up. That's because ``launcher_hunting``  sets 2 types of invincibilities, total invincibility and specific proofs:
+As we know, we have to die while starting S&F mission. But you can't just pull out a c4 and blow yourself up. That's because ``launcher_hunting``  sets 2 types of invincibility, total invincibility and specific proofs:
 
 ```
 entity::set_entity_invincible(player::player_ped_id(), 1);
@@ -129,7 +129,7 @@ With that knowledge all that's left is to delay the cutscene from playing by int
 ### Why Director Mode
 
 Drowning strat is rather slow because of the slow walk forced by ``hunting1`` and the fact that drowning itself is not a fast process. What can we do to make the process faster? Well, we still have proofs to deal with. 
-If we were to somehow disable both the proofs and the invincibility, we'll be able to blow ourselfs up and significantly speed up the process of getting OM0. That's where Director Mode comes in.
+If we were to somehow disable both the proofs and the invincibility, we'll be able to blow ourselves up and significantly speed up the process of getting OM0. That's where Director Mode comes in.
 
 ``director_mode`` script removes both invincibility and proofs after you close "Director Mode is not available whilst playing a mission." warning. This message occurs when you try to launch DM with ``MISSION_TYPE`` != ``MISSION_TYPE_OFF_MISSION`` (+ few other special cases we don't care about here). 
 The plan here is simple: start DM just before you trigger S&F mission. Sounds easy but there are 2 problems: 
