@@ -104,6 +104,44 @@ With mods (by calling ``int GET_CAUSE_OF_MOST_RECENT_FORCE_CLEANUP();`` every fr
 
 And that's it, that's how OM0 is achieved.
 
+### Why drowning
+
+As we know, we have to die while starting S&F mission. But you can't just pull out a c4 and blow yourself up. That's because ``launcher_hunting``  sets 2 types of invincibilities, total invincibility and specific proofs:
+
+```
+entity::set_entity_invincible(player::player_ped_id(), 1);
+Sets a ped or an object totally invincible. It doesn't take any kind of damage. Peds will not ragdoll on explosions and the tazer animation won't apply either.
+
+entity::set_entity_proofs(player::player_ped_id(), true, true, true, true, true, false, 0, false);
+SET_ENTITY_PROOFS(Entity entity, BOOL bulletProof, BOOL fireProof, BOOL explosionProof, BOOL collisionProof, BOOL meleeProof, BOOL steamProof, BOOL p7, BOOL drownProof);
+```
+
+If you've watched GTA V speedruns before runners started to use Director Mode setup, then you know that we used to drown to get OM0. So why that works?
+
+That's because ``hunting1`` script itself will clean the invincibility for us before starting the cutscene. You'll probably expect to find something like ``set_entity_invincible(player::player_ped_id(), 0);`` but in reality there is another way to set\remove the invincibility,
+that's ``void SET_PLAYER_CONTROL(Player player, BOOL bHasControl, int flags);`` native. The game is kind enough to make you invincible when it takes away the control from you and makes you vulnerable when it gives control back.
+
+Luckily for us, ``hunting1`` gives us the control back before the cutscene, even though we've never lost it and the native itself makes us vulnerable unconditionally. Now that we are vulnerable, only proofs are left and if we look closely at the ``set_entity_proofs`` call 
+we'll see that we are actually not steam or drown proof.
+
+With that knowledge all that's left is to delay the cutscene from playing by interrupting Cletus's dialogue with Trevor's special ability or alt-tapping and drown.
+
+### Why Director Mode
+
+Drowning strat is rather slow because of the slow walk forced by ``hunting1`` and the fact that drowning itself is not a fast process. What can we do to make the process faster? Well, we still have proofs to deal with. 
+If we were to somehow disable both the proofs and the invincibility, we'll be able to blow ourselfs up and significantly speed up the process of getting OM0. That's where Director Mode comes in.
+
+``director_mode`` script removes both invincibility and proofs after you close "Director Mode is not available whilst playing a mission." warning. This message occurs when you try to launch DM with ``MISSION_TYPE`` != ``MISSION_TYPE_OFF_MISSION`` (+ few other special cases we don't care about here). 
+The plan here is simple: start DM just before you trigger S&F mission. Sounds easy but there are 2 problems: 
+
+First problem here is that the game checks ``MISSION_TYPE`` 3 times if you start DM from interactions menu. First, it is checked right after you click the option in the interactions menu (``pi_menu``), second time in ``main`` before launching ``director_mode`` script
+and finally during the initialization of ``director_mode`` itself. Only ``director_mode`` script removes the proofs, meaning that you have to pass 2 checks before it starts and fail the last one to trigger removal of proofs. This alone requires close to frame perfect inputs from the player.
+
+The second problem is that ``launcher_hunting`` doesn't set proofs on the same frame as it changes ``MISSION_TYPE``. It first sets ``MISSION_TYPE`` and then it waits for ``hunting1`` script to load first before setting the proofs. What that means is that we can end up in the situations where we successfully
+got the warning screen from ``director_mode`` but still have no proofs set. In this case, ``director_mode`` will remove the proofs only for the ``launcher_hunting`` to set them back in few frames.
+
+These two problems combined make this trick close to frame perfect but with clever setups and references it is still possible to execute it with some consistency.
+
 ## Why OM0 "breaks"
 
 In GTA V you can prevent OM0 instance of a mission from displaying mission failed\passed screen and resetting mission checkpoint value, we call this broken OM0. 
